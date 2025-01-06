@@ -1,0 +1,263 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9 from tkinter import *\par
+from PIL import Image, ImageTk\par
+from tkinter import messagebox\par
+import requests\par
+import json\par
+from io import BytesIO\par
+import random\par
+\par
+# Initialize the main window\par
+root = Tk()\par
+root.title("Juice World App")\par
+root.geometry("600x700")\par
+root.resizable(0, 0)\par
+\par
+# Function to fetch random cocktail data\par
+def get_random_cocktail():\par
+    url = "{{\field{\*\fldinst{HYPERLINK https://www.thecocktaildb.com/api/json/v1/1/random.php }}{\fldrslt{https://www.thecocktaildb.com/api/json/v1/1/random.php\ul0\cf0}}}}\f0\fs22 "\par
+    response = requests.get(url)\par
+    data = response.json()\par
+\par
+    drink_name = data["drinks"][0]["strDrink"]\par
+    drink_id = data["drinks"][0]["idDrink"]\par
+    cocktail_name_label.config(text=f"Name: \{drink_name\}\\nID: \{drink_id\}")\par
+\par
+    image_url = data["drinks"][0]["strDrinkThumb"]\par
+    image_response = requests.get(image_url)\par
+    if image_response.status_code == 200:\par
+        image = Image.open(BytesIO(image_response.content))\par
+        image = image.resize((200, 200))\par
+        image = ImageTk.PhotoImage(image)\par
+        cocktail_image_label.config(image=image)\par
+        cocktail_image_label.image = image\par
+\par
+# Function to fetch an alcoholic cocktail\par
+def get_alcoholic_cocktail():\par
+    url = "{{\field{\*\fldinst{HYPERLINK https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Alcoholic }}{\fldrslt{https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Alcoholic\ul0\cf0}}}}\f0\fs22 "\par
+    response = requests.get(url)\par
+    data = response.json()\par
+\par
+    drink = random.choice(data["drinks"])\par
+    drink_name = drink["strDrink"]\par
+    drink_id = drink["idDrink"]\par
+\par
+    alcoholName.config(text=f"Name: \{drink_name\}\\nID: \{drink_id\}")\par
+\par
+    image_url = drink["strDrinkThumb"]\par
+    image_response = requests.get(image_url)\par
+    if image_response.status_code == 200:\par
+        image = Image.open(BytesIO(image_response.content))\par
+        image = image.resize((200, 200))\par
+        image = ImageTk.PhotoImage(image)\par
+        alcohol_image_label.config(image=image)\par
+        alcohol_image_label.image = image\par
+        \par
+# Function to fetch a non-alcoholic cocktail\par
+def get_non_alcoholic_cocktail():\par
+    url = "{{\field{\*\fldinst{HYPERLINK https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic }}{\fldrslt{https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic\ul0\cf0}}}}\f0\fs22 "\par
+    response = requests.get(url)\par
+    data = response.json()\par
+\par
+    drink = random.choice(data["drinks"])\par
+    drink_name = drink["strDrink"]\par
+    drink_id = drink["idDrink"]\par
+\par
+    non_alcoholic_name.config(text=f"Name: \{drink_name\}\\nID: \{drink_id\}")\par
+\par
+    image_url = drink["strDrinkThumb"]\par
+    image_response = requests.get(image_url)\par
+    if image_response.status_code == 200:\par
+        image = Image.open(BytesIO(image_response.content))\par
+        image = image.resize((200, 200))\par
+        image = ImageTk.PhotoImage(image)\par
+        non_image_label1.config(image=image)\par
+        non_image_label1.image = image\par
+\par
+# Function to fetch ingredient details\par
+def search_ingredient():\par
+    ingredient = ingredient_entry.get().strip()\par
+    if not ingredient:\par
+        messagebox.showerror("Error", "Please enter an ingredient name.")\par
+        return\par
+\par
+    url = f"https://www.thecocktaildb.com/api/json/v1/1/search.php?i=\{ingredient\}"\par
+    response = requests.get(url)\par
+    data = response.json()\par
+\par
+    ingredient_info.delete("1.0", END)  # Clear previous information\par
+\par
+    if data["ingredients"]:\par
+        ingredient_data = data["ingredients"][0]\par
+        name = ingredient_data.get("strIngredient", "N/A")\par
+        description = ingredient_data.get("strDescription", "No description available.")\par
+        type_ = ingredient_data.get("strType", "N/A")\par
+        alcoholic = ingredient_data.get("strAlcohol", "N/A")\par
+\par
+        ingredient_info.insert(END, f"Name: \{name\}\\n")\par
+        ingredient_info.insert(END, f"Type: \{type_\}\\n")\par
+        ingredient_info.insert(END, f"Alcoholic: \{alcoholic\}\\n")\par
+        ingredient_info.insert(END, f"Description: \{description\}\\n")\par
+    else:\par
+        ingredient_info.insert(END, "No ingredient found.")\par
+\par
+# Function to switch frames\par
+def show_frame(frame):\par
+    frame.tkraise()\par
+\par
+# Instructions popup\par
+def show_instructions():\par
+    instructions = "Welcome to the Cocktail App! Use the buttons to explore cocktails."\par
+    messagebox.showinfo("Instructions", instructions)\par
+\par
+# Frame 1: Welcome screen\par
+frame1 = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Desktop\\\\cocktail\\\\cockttt.jpg")\par
+resize_image = image.resize((600, 700))\par
+bg_img1 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label1 = Label(frame1, image=bg_img1)\par
+bg_image_label1.place(x=0, y=0)\par
+\par
+appName = Label(frame1, text="Welcome to Cocktail App", bg="pink", fg="red", font=('Roboto', 30, 'bold'))\par
+appName.place(x=60, y=100)\par
+\par
+\par
+InstrButton = Button(frame1, text="Instructions", bg="pink", fg="red", font=('Roboto', 16, 'bold'), command=show_instructions)\par
+InstrButton.place(x=50, y=600)\par
+\par
+nextButton = Button(frame1, text="Go to App", bg="pink", fg="red", font=('Roboto', 16, 'bold'), command=lambda: show_frame(ButtonFrame))\par
+nextButton.place(x=400, y=600)\par
+frame1.place(x=0, y=0)\par
+\par
+# Frame 2: Button options\par
+ButtonFrame = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Desktop\\\\cocktail\\\\image11.jpeg")\par
+resize_image = image.resize((600, 700))\par
+bg_img2 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label2 = Label(ButtonFrame, image=bg_img2)\par
+bg_image_label2.place(x=0, y=0)\par
+\par
+h1 = Label(ButtonFrame, text="Click the buttons below", bg="pink", fg="black", font=('Roboto', 18))\par
+h1.place(x=180, y=100)\par
+\par
+RandButton = Button(ButtonFrame, text="Random cocktail", bg="red", fg="white", font=('Roboto', 14, 'bold'), command=lambda: show_frame(Frame3))\par
+RandButton.place(x=220, y=200)\par
+\par
+alcoholicButton = Button(ButtonFrame, text="Alcoholics", bg="red", fg="white", font=('Roboto', 14, 'bold'), command=lambda: show_frame(Frame4))\par
+alcoholicButton.place(x=220, y=300)\par
+\par
+nonalcoholicsButton = Button(ButtonFrame, text="Non-Alcoholics", bg="red", fg="white", font=('Roboto', 14, 'bold'), command=lambda: show_frame(Frame5))\par
+nonalcoholicsButton.place(x=220, y=400)\par
+\par
+searchIngredientButton = Button(ButtonFrame, text="Search Ingredient", bg="red", fg="white", font=('Roboto', 14, 'bold'), command=lambda: show_frame(Frame6))\par
+searchIngredientButton.place(x=220, y=500)\par
+\par
+ButtonFrame.place(x=0, y=0)\par
+\par
+# Frame 6: Ingredient Search\par
+Frame6 = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Downloads\\\\DALL\'b7E 2025-01-06 06.54.42 - A visually appealing background image for a cocktail-themed application screen. The design features a vibrant mix of tropical fruits, cocktail glasses.webp")\par
+resize_image = image.resize((600, 700))\par
+bg_img6 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label6 = Label(Frame6, image=bg_img6)\par
+bg_image_label6.place(x=0, y=0)\par
+\par
+h1_ingredient = Label(Frame6, text="Search Ingredient", bg="pink", fg="red", font=('Roboto', 24, 'bold'))\par
+h1_ingredient.place(x=180, y=50)\par
+\par
+ingredient_entry = Entry(Frame6, width=30, font=('Roboto', 14))\par
+ingredient_entry.place(x=150, y=150)\par
+\par
+search_button_ingredient = Button(Frame6, text="Search", bg="red", fg="white", font=('Roboto', 15, 'bold'), command=search_ingredient)\par
+search_button_ingredient.place(x=250, y=200)\par
+\par
+ingredient_info = Text(Frame6, width=50, height=20, font=('Roboto', 12))\par
+ingredient_info.place(x=50, y=250)\par
+\par
+back_button_ingredient = Button(Frame6, text="Go Back", bg="red", fg="white", font=('Roboto', 15, 'bold'), command=lambda: show_frame(ButtonFrame))\par
+back_button_ingredient.place(x=400, y=600)\par
+\par
+Frame6.place(x=0, y=0)\par
+\par
+# Frame 3: Random cocktail\par
+Frame3 = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Desktop\\\\cocktail\\\\coktt.jpg")\par
+resize_image = image.resize((600, 700))\par
+bg_img3 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label3 = Label(Frame3, image=bg_img3)\par
+bg_image_label3.place(x=0, y=0)\par
+\par
+h1 = Label(Frame3, text="Random Alcohol", bg="pink", fg="red", font=('Roboto', 24, 'bold'))\par
+h1.place(x=200, y=50)\par
+\par
+cocktail_name_label = Label(Frame3, text="", bg="black", fg="white", font=('Roboto', 16))\par
+cocktail_name_label.place(x=200, y=250)\par
+\par
+cocktail_image_label = Label(Frame3, bg="black")\par
+cocktail_image_label.place(x=200, y=300)\par
+\par
+nextButton = Button(Frame3, text="Get Alcohol", bg="red", fg="white", font=('Roboto', 16, 'bold'), command=get_random_cocktail)\par
+nextButton.place(x=230, y=150)\par
+\par
+BackButton = Button(Frame3, text="Go Back", bg="red", fg="white", font=('Roboto', 16, 'bold'), command=lambda: show_frame(ButtonFrame))\par
+BackButton.place(x=400, y=600)\par
+\par
+Frame3.place(x=0, y=0)\par
+\par
+# Frame 4: Alcoholic cocktails\par
+Frame4 = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Downloads\\\\DALL\'b7E 2025-01-06 07.00.04 - A visually appealing background image for an alcoholic cocktail-themed application screen. The design features a variety of vibrant cocktails in elega.webp")\par
+resize_image = image.resize((600, 700))\par
+bg_img4 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label4 = Label(Frame4, image=bg_img4)\par
+bg_image_label4.place(x=0, y=0)\par
+\par
+h1 = Label(Frame4, text="Alcoholic Drinks", bg="pink", fg="red", font=('Roboto', 24, 'bold'))\par
+h1.place(x=180, y=50)\par
+\par
+alcoholName = Label(Frame4, text="", bg="white", fg="black", font=('Roboto', 16))\par
+alcoholName.place(x=200, y=250)\par
+\par
+nextButton = Button(Frame4, text="Get Drink", bg="pink", fg="red", font=('Roboto', 15, 'bold'), command=get_alcoholic_cocktail)\par
+nextButton.place(x=230, y=150)\par
+\par
+BackButton = Button(Frame4, text="Go Back", bg="pink", fg="red", font=('Roboto', 15, 'bold'), command=lambda: show_frame(ButtonFrame))\par
+BackButton.place(x=400, y=600)\par
+\par
+alcohol_image_label = Label(Frame4, bg="black")\par
+alcohol_image_label.place(x=200, y=350)\par
+\par
+Frame4.place(x=0, y=0)\par
+\par
+# Frame 5: Non-alcoholic cocktails\par
+Frame5 = Frame(root, width=600, height=700)\par
+image = Image.open("C:\\\\Users\\\\Ruzeynah kashif\\\\Desktop\\\\cocktail\\\\cock4.jpeg")\par
+resize_image = image.resize((600, 700))\par
+bg_img5 = ImageTk.PhotoImage(resize_image)\par
+bg_image_label5 = Label(Frame5, image=bg_img5)\par
+bg_image_label5.place(x=0, y=0)\par
+\par
+h1_non_alcoholic = Label(Frame5, text="Non-Alcoholic Drinks", bg="pink", fg="red", font=('Roboto', 24, 'bold'))\par
+h1_non_alcoholic.place(x=180, y=50)\par
+\par
+non_alcoholic_name = Label(Frame5, text="", bg="white", fg="black", font=('Roboto', 16))\par
+non_alcoholic_name.place(x=200, y=250)\par
+\par
+next_button_non = Button(Frame5, text="Get Drink", bg="red", fg="white", font=('Roboto', 15, 'bold'), command=get_non_alcoholic_cocktail)\par
+next_button_non.place(x=230, y=150)\par
+\par
+back_button_non = Button(Frame5, text="Go Back", bg="red", fg="white", font=('Roboto', 15, 'bold'), command=lambda: show_frame(ButtonFrame))\par
+back_button_non.place(x=400, y=600)\par
+\par
+non_image_label1 = Label(Frame5, bg="black")\par
+non_image_label1.place(x=200, y=350)\par
+\par
+Frame5.place(x=0, y=0)\par
+# Set the initial visible frame\par
+show_frame(frame1)\par
+\par
+root.mainloop()\par
+}
+ 
